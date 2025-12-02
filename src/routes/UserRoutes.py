@@ -1,5 +1,5 @@
 from fastapi import HTTPException, FastAPI, APIRouter
-from ..database.User_schema import User, User_create
+from ..database.User_schema import User, User_create, User_update
 from ..controllers import UserController
 
 
@@ -44,7 +44,7 @@ async def get_user(user_id: int):
         raise HTTPException(status_code=400, detail=str(e))
     
 @router_users.put("/update/{user_id}")
-async def update_user(user_id: int, data: User):
+async def update_user(user_id: int, data: User_update):
     try:
         return await UserController.update_user(user_id, data.username, data.role_id)
     except Exception as e:
@@ -53,7 +53,7 @@ async def update_user(user_id: int, data: User):
 @router_users.delete("/delete/{user_id}")
 async def delete_user(user_id: int):
     try: 
-        return await UserController.delete_user(user_id)
+        return await UserController.deactivate_user(user_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

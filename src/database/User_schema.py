@@ -8,6 +8,10 @@ class User_create(BaseModel):
     password: str
     role_id: int
 
+class User_update(BaseModel):
+    username: str
+    role_id: int
+
 class User(BaseModel):
     id: int
     username: str

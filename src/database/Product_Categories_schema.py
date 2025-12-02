@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
+
 
 # Modelo de entrada para crear una categoría (POST)
 class ProductCategoryCreate(BaseModel):

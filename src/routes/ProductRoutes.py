@@ -6,7 +6,7 @@ from ..controllers import ProductController
 router_products = APIRouter(prefix="/products", tags=["products"])
 
 
-@router_products.post("/Create", response_model=Product, status_code=status.HTTP_201_CREATED,)
+@router_products.post("/create", response_model=Product, status_code=status.HTTP_201_CREATED,)
 async def create_product_route(data: ProductCreate):
     """Crea un nuevo producto."""
     try:
