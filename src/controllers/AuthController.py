@@ -5,7 +5,7 @@ from passlib.context import CryptContext
 from passlib.hash import pbkdf2_sha256
 import jwt
 from dotenv import load_dotenv
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from ..database.User_schema import User
 
@@ -17,7 +17,6 @@ ALGORITHM = "HS256"
 TOKEN_LIFESPAN = 300
 
 
-
 def hash_password(password: str) -> str:
     return pbkdf2_sha256.hash(password)
 
@@ -25,7 +24,7 @@ def verify_password(password: str, hashed_password: str) -> bool:
     return pbkdf2_sha256.verify(password, hashed_password)
 
 def create_token(user: User) -> str:
-    expiration = datetime.utcnow() + timedelta(minutes=TOKEN_LIFESPAN)
+    expiration = datetime.now(tz=timezone.utc) + timedelta(minutes=TOKEN_LIFESPAN)
 
     info = {
         "user_id": user.id,

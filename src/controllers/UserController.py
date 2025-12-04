@@ -3,19 +3,26 @@ from ..database.User_schema import User
 from ..controllers.AuthController import hash_password
 
 async def get_user_by_username(username):
+
     db = Conection()
 
+    try:
+        result = await db.execute(
+            "SELECT username from users where username = ? ",
+            [username]
+        )
 
-    result = await db.execute(
-        "SELECT username from users where username = ? ",
-        [username]
-    )
+        if not result.rows:
+            return None
+        
 
-    if not result.rows:
-        return None
+        return result.rows[0][0]
     
-
-    return result.rows[0][0]
+    except Exception as e:
+        return {"message": f"{e}"}
+    finally: db.close
+        
+        
 
 
     
@@ -39,6 +46,8 @@ async def create_user(username: str, password: str, role_id: int):
         return {"message": "Usuario creado exitosamente", "username": username}
     except Exception as e:
         return {"message": f"{e}"}
+        
+    finally: db.close
 
 async def get_users() -> list[User]:
     
@@ -49,7 +58,7 @@ async def get_users() -> list[User]:
             "SELECT * FROM users"
         )
 
-        db.close
+
 
         user_list =[ User(**dict(zip(result.columns, row)))
             for row in result.rows]
@@ -58,6 +67,8 @@ async def get_users() -> list[User]:
     
     except Exception as e:
         return {"message": f"{e}"}
+    
+    finally: db.close
     
         
     
@@ -71,7 +82,7 @@ async def get_users_by_id(user_id: int) -> User:
             [user_id]    
         )
 
-        db.close
+
 
         if not result.rows:
             return None
@@ -83,6 +94,8 @@ async def get_users_by_id(user_id: int) -> User:
         return User(**user_dict)
     except Exception as e:
         return {"message": f"{e}"}
+    
+    finally: db.close
 
 
 
@@ -96,13 +109,12 @@ async def update_user(user_id: int, username: str, role_id: int) -> bool:
             "UPDATE users SET username = ?, role_id = ? WHERE id = ?",
             [username, role_id, user_id]
         )
-
-        db.close
-        
         return True
+    
     except Exception as e:
-        db.close
         return {"message": f"{e}"}
+    
+    finally: db.close
 
     
 #Cambiar a Desactivar usuario
@@ -110,17 +122,19 @@ async def update_user(user_id: int, username: str, role_id: int) -> bool:
 async def deactivate_user(user_id: int):
     db = Conection()
 
-    result = await db.execute(
-        "DELETE FROM users WHERE ID = ?",
-        [user_id]
-    )
+    try:
 
+        result = await db.execute(
+            "DELETE FROM users WHERE ID = ?",
+            [user_id]
+        )
+        return True
 
-    db.close
+    except Exception as e:
+         return {"message": f"{e}"}
+    
+    finally: db.close
 
-
-
-    return True
     
 
 
