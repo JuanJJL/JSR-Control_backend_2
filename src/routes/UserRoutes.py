@@ -1,6 +1,7 @@
-from fastapi import HTTPException, FastAPI, APIRouter
+from fastapi import HTTPException, FastAPI, APIRouter, Depends
 from ..database.User_schema import User, User_create, User_update
 from ..controllers import UserController
+from ..middlewares.auth_middeware import verify_token, require_role
 
 
 
@@ -9,7 +10,7 @@ router_users = APIRouter(prefix="/users", tags=["users"])
 
 
 @router_users.post("/create" )
-async def create_user(data: User_create):
+async def create_user(data: User_create, current_user: dict = Depends(require_role([3]))):
     
     if not data.username or len(data.username) < 3:
         raise HTTPException(status_code=400, detail="El nombre de usuario debe tener por lo menos 3 caracteres")
@@ -30,28 +31,28 @@ async def create_user(data: User_create):
         raise HTTPException(status_code=500, detail={str(e)})
     
 @router_users.get("/")
-async def get_all_users():
+async def get_all_users(current_user: dict = Depends(require_role([3]))):
     try:
         return await UserController.get_users()
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
 @router_users.get("/{user_id}")
-async def get_user(user_id: int):
+async def get_user(user_id: int, current_user: dict = Depends(require_role([3]))):
     try:
         return await UserController.get_users_by_id(user_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
 @router_users.put("/update/{user_id}")
-async def update_user(user_id: int, data: User_update):
+async def update_user(user_id: int, data: User_update, current_user: dict = Depends(require_role([3]))):
     try:
         return await UserController.update_user(user_id, data.username, data.role_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 @router_users.delete("/delete/{user_id}")
-async def delete_user(user_id: int):
+async def delete_user(user_id: int , current_user: dict = Depends(require_role([3]))):
     try: 
         return await UserController.deactivate_user(user_id)
     except Exception as e:
