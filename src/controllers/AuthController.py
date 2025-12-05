@@ -31,7 +31,7 @@ def create_token(user: User) -> str:
         "username": user.username,
         "role_id": user.role_id,
         "status": user.status,
-        "exp": expiration.timestamp()
+        "exp": int(expiration.timestamp())
     }
     
     token = jwt.encode(info, SECRET_KEY, algorithm=ALGORITHM)
