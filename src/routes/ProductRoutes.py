@@ -1,13 +1,15 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from typing import List, Optional
 from ..database.Products_schema import Product, ProductCreate, ProductUpdate
 from ..controllers import ProductController
+from ..middlewares.auth_middeware import verify_token, require_role
+
 
 router_products = APIRouter(prefix="/products", tags=["products"])
 
 
 @router_products.post("/create", response_model=Product, status_code=status.HTTP_201_CREATED,)
-async def create_product_route(data: ProductCreate):
+async def create_product_route(data: ProductCreate,  current_user: dict = Depends(require_role([3, 2]))):
     """Crea un nuevo producto."""
     try:
         return await ProductController.create_product(data)
@@ -42,7 +44,7 @@ async def get_products_by_category_route(category_id: int):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 @router_products.put("/update/{product_id}", response_model=Product)
-async def update_product_route(product_id: int, data: ProductUpdate):
+async def update_product_route(product_id: int, data: ProductUpdate,  current_user: dict = Depends(require_role([3,2]))):
     """Actualiza campos de un producto existente."""
     try:
         updated_product = await ProductController.update_product(product_id, data)
@@ -53,7 +55,7 @@ async def update_product_route(product_id: int, data: ProductUpdate):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 @router_products.delete("/delete/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_product_route(product_id: int):
+async def delete_product_route(product_id: int, current_user: dict = Depends(require_role([3,2]))):
     """Elimina un producto por su ID."""
     success = await ProductController.delete_product(product_id)
     if not success:
