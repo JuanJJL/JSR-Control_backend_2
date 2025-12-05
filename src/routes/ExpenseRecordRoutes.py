@@ -1,11 +1,12 @@
-from fastapi import HTTPException, APIRouter
+from fastapi import HTTPException, APIRouter, Depends
 from ..database.ExpenseRecord_schema import ExpenseRecord, ExpenseRecord_create
 from ..controllers import ExpenseRecordController
+from ..middlewares.auth_middeware import require_role
 
 router_expense_records = APIRouter(prefix="/expense_records", tags=["expense_records"])
 
 @router_expense_records.post("/create")
-async def create_expense_record(data: ExpenseRecord_create):
+async def create_expense_record(data: ExpenseRecord_create, current_user: dict = Depends(require_role([3,2]))):
     if data.cost < 0:
         raise HTTPException(status_code=400, detail="El costo no puede ser negativo")
         
@@ -37,7 +38,7 @@ async def get_expense_record(record_id: int):
         raise HTTPException(status_code=400, detail=str(e))
 
 @router_expense_records.put("/update/{record_id}")
-async def update_expense_record(record_id: int, data: ExpenseRecord_create):
+async def update_expense_record(record_id: int, data: ExpenseRecord_create, current_user: dict = Depends(require_role([3]))):
     try:
         return await ExpenseRecordController.update_expense_record(
             record_id,
@@ -53,7 +54,7 @@ async def update_expense_record(record_id: int, data: ExpenseRecord_create):
         raise HTTPException(status_code=400, detail=str(e))
 
 @router_expense_records.delete("/delete/{record_id}")
-async def delete_expense_record(record_id: int):
+async def delete_expense_record(record_id: int, current_user: dict = Depends(require_role([3]))):
     try:
         return await ExpenseRecordController.delete_expense_record(record_id)
     except Exception as e:
