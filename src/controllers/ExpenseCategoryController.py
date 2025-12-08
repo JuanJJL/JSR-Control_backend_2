@@ -55,7 +55,7 @@ async def update_expense_category(category_id: int, category: str) -> bool:
             "UPDATE expense_categories SET category = ? WHERE id = ?",
             [category, category_id]
         )
-        return True
+        return {"message": "Categoria de expensa actualizada exitosamente"}
     except Exception as e:
         return {"message": f"{e}"}
     finally:
@@ -68,7 +68,7 @@ async def delete_expense_category(category_id: int):
             "DELETE FROM expense_categories WHERE id = ?",
             [category_id]
         )
-        return True
+        return {"message": "Categoria de expensa eliminada exitosamente"}
     except Exception as e:
         return {"message": f"{e}"}
     finally:

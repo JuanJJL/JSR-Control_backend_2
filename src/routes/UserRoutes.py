@@ -51,10 +51,10 @@ async def update_user(user_id: int, data: User_update, current_user: dict = Depe
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router_users.delete("/delete/{user_id}")
+@router_users.delete("/{user_id}")
 async def delete_user(user_id: int , current_user: dict = Depends(require_role([3]))):
     try: 
-        return await UserController.deactivate_user(user_id)
+        return await UserController.delete_user(user_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

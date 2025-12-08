@@ -55,7 +55,7 @@ async def update_expense_record(record_id: int, supervisor_id: int, responsible_
             "UPDATE expense_records SET supervisor_id = ?, responsible_id = ?, category_id = ?, payment_method_id = ?, description = ?, cost = ?, is_reviewed = ? WHERE id = ?",
             [supervisor_id, responsible_id, category_id, payment_method_id, description, cost, is_reviewed, record_id]
         )
-        return True
+        return {"message": "Registro de expensa actualizado exitosamente"}
     except Exception as e:
         return {"message": f"{e}"}
     finally:
@@ -68,7 +68,7 @@ async def delete_expense_record(record_id: int):
             "DELETE FROM expense_records WHERE id = ?",
             [record_id]
         )
-        return True
+        return {"message": "Registro de expensa eliminado exitosamente"}
     except Exception as e:
         return {"message": f"{e}"}
     finally:
