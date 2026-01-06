@@ -4,14 +4,23 @@ from src.routes.AuthRoutes import router
 from src.routes.ProductRoutes import router_products
 from src.routes.ClientsRoutes import router_clients
 from src.routes.ProductCategoryRoutes import router_ProductsCategory
+from src.routes.PaymentMethodRoutes import router_payment_methods
+from src.routes.ExpenseCategoryRoutes import router_expense_categories
+from src.routes.ExpenseRecordRoutes import router_expense_records
+from src.routes.SalesRecordsRoutes import router_sales
+
 
 
 
 app = FastAPI()
 
+app.include_router(router_clients, tags=["Clients"])
+app.include_router(router_users,tags=["users"])
+app.include_router(router,tags=["auth"])
+app.include_router(router_ProductsCategory, tags=["product_categories"])
+app.include_router(router_products,tags=["products"])
+app.include_router(router_payment_methods,tags=["payment_methods"])
+app.include_router(router_expense_categories,tags=["expense_categories"])
+app.include_router(router_expense_records,tags=["expense_records"])
 
-app.include_router(router_users, tags=["users"])
-app.include_router(router, tags=["auth"])
-app.include_router(router_ProductsCategory, tags=["productsCategory"])
-app.include_router(router_products, tags=["products"])
-app.include_router(router_clients, tags=["clients"])
+app.include_router(router_sales, tags=["Sales"])

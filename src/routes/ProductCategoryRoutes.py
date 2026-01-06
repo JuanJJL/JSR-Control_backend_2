@@ -1,13 +1,13 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from typing import List, Optional
 from ..database.Product_Categories_schema import Product_Category, ProductCategoryCreate
 from ..controllers import ProductoCategoryController
-
+from ..middlewares.auth_middeware import verify_token, require_role
 router_ProductsCategory = APIRouter(prefix="/products", tags=["productsCategory"])
 
 
 @router_ProductsCategory.post("/categories/create", response_model=Product_Category, status_code=status.HTTP_201_CREATED)
-async def create_category_route(data: ProductCategoryCreate):
+async def create_category_route(data: ProductCategoryCreate, current_user: dict = Depends(require_role([3,2]))):
     """Crea una nueva categoría de producto."""
     try:
         return await ProductoCategoryController.create_category(data.category)
@@ -31,7 +31,7 @@ async def get_category_by_id_route(category_id: int):
     return category
 
 @router_ProductsCategory.put("/categories/update/{category_id}", response_model=Product_Category)
-async def update_category_route(category_id: int, data: ProductCategoryCreate):
+async def update_category_route(category_id: int, data: ProductCategoryCreate, current_user: dict = Depends(require_role([3,2]))):
     """Actualiza una categoría existente."""
     try:
         updated_category = await ProductoCategoryController.update_category(category_id, data.category)
@@ -42,7 +42,7 @@ async def update_category_route(category_id: int, data: ProductCategoryCreate):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 @router_ProductsCategory.delete("/categories/delete/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_category_route(category_id: int):
+async def delete_category_route(category_id: int, current_user: dict = Depends(require_role([3,2]))):
     """Elimina una categoría por su ID."""
     try:
         success = await ProductoCategoryController.delete_category(category_id)
